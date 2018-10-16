@@ -1,17 +1,18 @@
 #include <AT89X51.H>
 #define uint unsigned int
 #define uchar unsigned char
-sbit led1=P1^0;
+
 sbit k1=P1^1;
 sbit k2=P1^2;
 sbit k3=P1^3;
 sbit k4=P1^4;
 sbit k5=P1^5;
+sbit k6=P1^6;
 
-void xiaoai();
+void display();
 uchar code duan[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0x88,0x83,0xc6,0xa1,0x86,0x8e};
 uchar code wei[]={0x7f,0xbf,0xdf,0xef,0xf7,0xfb,0xfd,0xfe};
-uint miao,fen,xiaoshi,ge,shi,bai,qian,wan,shiwan,t;
+uint second, minute, hour, one, ten, hundred, thousand, tthousand, oht, t;
 
 void times(uint z)
 {
@@ -20,41 +21,41 @@ void times(uint z)
 		for(j=0; j<121; j++);
 }
 
-void xiaoai()
+void display()
 {
-	ge=miao%10;
-	shi=miao/10;
-	bai=fen%10;
-	qian=fen/10;
-	wan=xiaoshi%10;
-	shiwan=xiaoshi/10;
+	one=second%10;
+	ten=second/10;
+	hundred=minute%10;
+	thousand=minute/10;
+	tthousand=hour%10;
+	oht=hour/10;
 
-	P0=duan[ge];
+	P0=duan[one];
 	P2=wei[7];
 	times(1);
 	P2=0xff;
 
-	P0=duan[shi];
+	P0=duan[ten];
 	P2=wei[6];
 	times(1);
 	P2=0xff;
 
-	P0=duan[bai];
+	P0=duan[hundred];
 	P2=wei[5];
 	times(1);
 	P2=0xff;
 
-	P0=duan[qian];
+	P0=duan[thousand];
 	P2=wei[4];
 	times(1);
 	P2=0xff;
 
-	P0=duan[wan];
+	P0=duan[tthousand];
 	P2=wei[3];
 	times(1);
 	P2=0xff;
 
-	P0=duan[shiwan];
+	P0=duan[oht];
 	P2=wei[2];
 	times(1);
 	P2=0xff;
@@ -62,57 +63,65 @@ void xiaoai()
 
 void main()
 {
+	TR0=1;
 	EA=1;
 	TMOD=0x01;
 	ET0=1;
 	TH0=(65535-50000)/256;
 	TL0=(65535-50000)%256;
 
-while(1)
-{
-	xiaoai();
-
-	if(k1==0)
-		TR0=1;
-	else if(k2==0)
-			TR0=0;
-	else if(k3==0) {
-		miao=0;
-		fen=0;
-		xiaoshi=0;
-	}
-	else if(TR0==0&&k4==0)
+	while(1)
 	{
-		fen=fen+1;
-		while(!k4) {
-			xiaoai();
+		display();
+
+		if(k1==0)
+			TR0=1;
+		else if(k2==0)
+				TR0=0;
+		else if(k3==0) {
+			second=0;
+			minute=0;
+			hour=0;
 		}
-	}
-	else if(TR0==0&&k5==0) {
-		xiaoshi=xiaoshi+1;
-		while(!k5) {
-			xiaoai();
+		else if(TR0==0 && k4==0)
+		{
+			second=second+1;
+			while(!k4) {
+				display();
+			}
 		}
-	}
+		else if(TR0==0 && k5==0) {
+			minute=minute+1;
+			while(!k5) {
+				display();
+			}
+		}
+		else if(TR0==0 && k6==0) {
+			hour=hour+1;
+			while(!k6) {
+				display();
+			}
+		}
 
 
-	if(t==20){
-		t=0;
-		miao=miao+1;
+		if(t==20){
+			t=0;
+			second=second+1;
+		}
+		else if(second==60) {
+			second=0;
+			minute=minute+1;
+		}
+		else if(minute==60) {
+			minute=0;
+			hour=hour+1;
+		}
+		else if(hour==24) {
+			hour=0;
+		}
+		
+		display();
 	}
-	else if(miao==60) {
-		miao=0;
-		fen=fen+1;
-	}
-	else if(fen==60) {
-		fen=0;
-		xiaoshi=xiaoshi+1;
-	}
-	else if(xiaoshi==24)
-		xiaoshi=0;
-	
-	xiaoai();
-}
 }
 
 void int0() interrupt 1

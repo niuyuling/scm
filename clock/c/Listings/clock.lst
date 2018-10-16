@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   CLOCK                                                             05/23/2018 00:05:56 PAGE 1   
+C51 COMPILER V9.59.0.0   CLOCK                                                             10/13/2018 20:41:27 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE CLOCK
@@ -11,134 +11,143 @@ line level    source
    1          #include <AT89X51.H>
    2          #define uint unsigned int
    3          #define uchar unsigned char
-   4          sbit led1=P1^0;
+   4          
    5          sbit k1=P1^1;
    6          sbit k2=P1^2;
    7          sbit k3=P1^3;
    8          sbit k4=P1^4;
    9          sbit k5=P1^5;
-  10          
-  11          void xiaoai();
-  12          uchar code duan[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0x88,0x83,0xc6,0xa1,0x86,0x8e};
-  13          uchar code wei[]={0x7f,0xbf,0xdf,0xef,0xf7,0xfb,0xfd,0xfe};
-  14          uint miao,fen,xiaoshi,ge,shi,bai,qian,wan,shiwan,t;
-  15          
-  16          void times(uint z)
-  17          {
-  18   1        uint i,j;
-  19   1        for(i=0; i<z; i++)
-  20   1          for(j=0; j<121; j++);
-  21   1      }
-  22          
-  23          void xiaoai()
-  24          {
-  25   1        ge=miao%10;
-  26   1        shi=miao/10;
-  27   1        bai=fen%10;
-  28   1        qian=fen/10;
-  29   1        wan=xiaoshi%10;
-  30   1        shiwan=xiaoshi/10;
-  31   1      
-  32   1        P0=duan[ge];
-  33   1        P2=wei[7];
-  34   1        times(1);
-  35   1        P2=0xff;
-  36   1      
-  37   1        P0=duan[shi];
-  38   1        P2=wei[6];
-  39   1        times(1);
-  40   1        P2=0xff;
-  41   1      
-  42   1        P0=duan[bai];
-  43   1        P2=wei[5];
-  44   1        times(1);
-  45   1        P2=0xff;
-  46   1      
-  47   1        P0=duan[qian];
-  48   1        P2=wei[4];
-  49   1        times(1);
-  50   1        P2=0xff;
-  51   1      
-  52   1        P0=duan[wan];
-  53   1        P2=wei[3];
-  54   1        times(1);
-C51 COMPILER V9.59.0.0   CLOCK                                                             05/23/2018 00:05:56 PAGE 2   
+  10          sbit k6=P1^6;
+  11          
+  12          void display();
+  13          uchar code duan[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0x88,0x83,0xc6,0xa1,0x86,0x8e};
+  14          uchar code wei[]={0x7f,0xbf,0xdf,0xef,0xf7,0xfb,0xfd,0xfe};
+  15          uint second, minute, hour, one, ten, hundred, thousand, tthousand, oht, t;
+  16          
+  17          void times(uint z)
+  18          {
+  19   1        uint i,j;
+  20   1        for(i=0; i<z; i++)
+  21   1          for(j=0; j<121; j++);
+  22   1      }
+  23          
+  24          void display()
+  25          {
+  26   1        one=second%10;
+  27   1        ten=second/10;
+  28   1        hundred=minute%10;
+  29   1        thousand=minute/10;
+  30   1        tthousand=hour%10;
+  31   1        oht=hour/10;
+  32   1      
+  33   1        P0=duan[one];
+  34   1        P2=wei[7];
+  35   1        times(1);
+  36   1        P2=0xff;
+  37   1      
+  38   1        P0=duan[ten];
+  39   1        P2=wei[6];
+  40   1        times(1);
+  41   1        P2=0xff;
+  42   1      
+  43   1        P0=duan[hundred];
+  44   1        P2=wei[5];
+  45   1        times(1);
+  46   1        P2=0xff;
+  47   1      
+  48   1        P0=duan[thousand];
+  49   1        P2=wei[4];
+  50   1        times(1);
+  51   1        P2=0xff;
+  52   1      
+  53   1        P0=duan[tthousand];
+  54   1        P2=wei[3];
+C51 COMPILER V9.59.0.0   CLOCK                                                             10/13/2018 20:41:27 PAGE 2   
 
-  55   1        P2=0xff;
-  56   1      
-  57   1        P0=duan[shiwan];
-  58   1        P2=wei[2];
-  59   1        times(1);
-  60   1        P2=0xff;
-  61   1      }
-  62          
-  63          void main()
-  64          {
-  65   1        EA=1;
-  66   1        TMOD=0x01;
-  67   1        ET0=1;
-  68   1        TH0=(65535-50000)/256;
-  69   1        TL0=(65535-50000)%256;
-  70   1      
-  71   1      while(1)
-  72   1      {
-  73   2        xiaoai();
-  74   2      
-  75   2        if(k1==0)
-  76   2          TR0=1;
-  77   2        else if(k2==0)
-  78   2            TR0=0;
-  79   2        else if(k3==0) {
-  80   3          miao=0;
-  81   3          fen=0;
-  82   3          xiaoshi=0;
-  83   3        }
-  84   2        else if(TR0==0&&k4==0)
-  85   2        {
-  86   3          fen=fen+1;
-  87   3          while(!k4) {
-  88   4            xiaoai();
-  89   4          }
-  90   3        }
-  91   2        else if(TR0==0&&k5==0) {
-  92   3          xiaoshi=xiaoshi+1;
-  93   3          while(!k5) {
-  94   4            xiaoai();
-  95   4          }
-  96   3        }
-  97   2      
-  98   2      
-  99   2        if(t==20){
- 100   3          t=0;
- 101   3          miao=miao+1;
- 102   3        }
- 103   2        else if(miao==60) {
- 104   3          miao=0;
- 105   3          fen=fen+1;
- 106   3        }
- 107   2        else if(fen==60) {
- 108   3          fen=0;
- 109   3          xiaoshi=xiaoshi+1;
- 110   3        }
- 111   2        else if(xiaoshi==24)
- 112   2          xiaoshi=0;
- 113   2        
- 114   2        xiaoai();
- 115   2      }
- 116   1      }
-C51 COMPILER V9.59.0.0   CLOCK                                                             05/23/2018 00:05:56 PAGE 3   
+  55   1        times(1);
+  56   1        P2=0xff;
+  57   1      
+  58   1        P0=duan[oht];
+  59   1        P2=wei[2];
+  60   1        times(1);
+  61   1        P2=0xff;
+  62   1      }
+  63          
+  64          void main()
+  65          {
+  66   1        TR0=1;
+  67   1        EA=1;
+  68   1        TMOD=0x01;
+  69   1        ET0=1;
+  70   1        TH0=(65535-50000)/256;
+  71   1        TL0=(65535-50000)%256;
+  72   1      
+  73   1        while(1)
+  74   1        {
+  75   2          display();
+  76   2      
+  77   2          if(k1==0)
+  78   2            TR0=1;
+  79   2          else if(k2==0)
+  80   2              TR0=0;
+  81   2          else if(k3==0) {
+  82   3            second=0;
+  83   3            minute=0;
+  84   3            hour=0;
+  85   3          }
+  86   2          else if(TR0==0 && k4==0)
+  87   2          {
+  88   3            second=second+1;
+  89   3            while(!k4) {
+  90   4              display();
+  91   4            }
+  92   3          }
+  93   2          else if(TR0==0 && k5==0) {
+  94   3            minute=minute+1;
+  95   3            while(!k5) {
+  96   4              display();
+  97   4            }
+  98   3          }
+  99   2          else if(TR0==0 && k6==0) {
+ 100   3            hour=hour+1;
+ 101   3            while(!k6) {
+ 102   4              display();
+ 103   4            }
+ 104   3          }
+ 105   2      
+ 106   2      
+ 107   2          if(t==20){
+ 108   3            t=0;
+ 109   3            second=second+1;
+ 110   3          }
+ 111   2          else if(second==60) {
+ 112   3            second=0;
+ 113   3            minute=minute+1;
+ 114   3          }
+ 115   2          else if(minute==60) {
+ 116   3            minute=0;
+C51 COMPILER V9.59.0.0   CLOCK                                                             10/13/2018 20:41:27 PAGE 3   
 
- 117          
- 118          void int0() interrupt 1
- 119          {
- 120   1        t++;
- 121   1        TH0=(65535-50000)/256;
- 122   1        TL0=(65535-50000)%256;
- 123   1      }
+ 117   3            hour=hour+1;
+ 118   3          }
+ 119   2          else if(hour==24) {
+ 120   3            hour=0;
+ 121   3          }
+ 122   2          
+ 123   2          display();
+ 124   2        }
+ 125   1      }
+ 126          
+ 127          void int0() interrupt 1
+ 128          {
+ 129   1        t++;
+ 130   1        TH0=(65535-50000)/256;
+ 131   1        TL0=(65535-50000)%256;
+ 132   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    480    ----
+   CODE SIZE        =    504    ----
    CONSTANT SIZE    =     24    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
